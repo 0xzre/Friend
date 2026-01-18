@@ -1,3 +1,4 @@
+import ast
 import base64
 import json
 import os
@@ -57,7 +58,7 @@ def set_plugin_review(plugin_id: str, uid: str, score: float, review: str = ''):
     if not reviews:
         reviews = {}
     else:
-        reviews = eval(reviews)
+        reviews = ast.literal_eval(reviews.decode())
     reviews[uid] = {'score': score, 'review': review, 'rated_at': datetime.now(timezone.utc).isoformat(), 'uid': uid}
     r.set(f'plugins:{plugin_id}:reviews', str(reviews))
 
@@ -68,7 +69,7 @@ def migrate_user_plugins_reviews(prev_uid: str, new_uid: str):
         reviews = r.get(key)
         if not reviews:
             continue
-        reviews = eval(reviews)
+        reviews = ast.literal_eval(reviews.decode())
         if prev_uid in reviews:
             reviews[new_uid] = reviews.pop(prev_uid)
             reviews[new_uid]['uid'] = new_uid
@@ -94,7 +95,7 @@ def get_plugin_reviews(plugin_id: str) -> dict:
     reviews = r.get(f'plugins:{plugin_id}:reviews')
     if not reviews:
         return {}
-    return eval(reviews)
+    return ast.literal_eval(reviews.decode())
 
 
 def set_plugin_installs_count(plugin_id: str, count: int):
@@ -150,7 +151,7 @@ def get_cached_facts(uid: str) -> List[dict]:
     facts = r.get(f'users:{uid}:facts')
     if not facts:
         return []
-    return eval(facts)
+    return ast.literal_eval(facts.decode())
 
 
 def cache_signed_url(blob_path: str, signed_url: str, ttl: int = 60 * 60):
@@ -174,10 +175,10 @@ def get_cached_user_geolocation(uid: str):
     geolocation = r.get(f'users:{uid}:geolocation')
     if not geolocation:
         return None
-    return eval(geolocation)
+    return ast.literal_eval(geolocation.decode())
 
 
-# VISIIBILTIY OF MEMORIES
+# VISIBILITY OF MEMORIES
 def store_memory_to_uid(memory_id: str, uid: str):
     r.set(f'memories-visibility:{memory_id}', uid)
 
