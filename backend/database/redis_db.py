@@ -178,7 +178,7 @@ def get_cached_user_geolocation(uid: str):
     return ast.literal_eval(geolocation.decode())
 
 
-# VISIIBILTIY OF MEMORIES
+# VISIBILITY OF MEMORIES
 def store_memory_to_uid(memory_id: str, uid: str):
     r.set(f'memories-visibility:{memory_id}', uid)
 
